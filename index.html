@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Churn Prediction App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-bottom: 5px;
+        }
+        input {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Customer Churn Prediction App</h1>
+        <form id="prediction-form">
+            <label for="customer-id">Customer ID:</label>
+            <input type="text" id="customer-id" name="customer_id">
+            
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name">
+            
+            <label for="age">Age:</label>
+            <input type="number" id="age" name="age" min="1" max="100">
+
+            <label for="gender">Gender:</label>
+            <select id="gender" name="gender">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+            
+            
+            <label for="location">Location:</label>
+            <input type="text" id="location" name="location">
+            
+            <label for="subscription-length">Subscription Length (Months):</label>
+            <input type="number" id="subscription-length" name="subscription_length">
+            
+            <label for="monthly-bill">Monthly Bill:</label>
+            <input type="number" id="monthly-bill" name="monthly_bill">
+            
+            <label for="total-usage">Total Usage (GB):</label>
+            <input type="number" id="total-usage" name="total_usage_gb">
+            
+            <button type="button" id="predict-button">Predict Churn</button>
+        </form>
+        
+        <div id="prediction-result" style="display: none;"></div>
+    </div>
+
+    <script>
+        const predictButton = document.getElementById('predict-button');
+        const predictionForm = document.getElementById('prediction-form');
+        const predictionResult = document.getElementById('prediction-result');
+    
+        predictButton.addEventListener('click', () => {
+            // Get form input values
+            const customerID = document.getElementById('customer-id').value;
+            const name = document.getElementById('name').value;
+            const gender = document.getElementById('gender').value;
+            const age = document.getElementById('age').value;
+            const location = document.getElementById('location').value;
+            const subscriptionLength = document.getElementById('subscription-length').value;
+            const monthlyBill = document.getElementById('monthly-bill').value;
+            const totalUsage = document.getElementById('total-usage').value;
+    
+            // Simple validation
+            if (customerID === '' || name === '' || gender === '' || age === '' || location === '' ||
+                subscriptionLength === '' || monthlyBill === '' || totalUsage === '') {
+                alert('Please fill out all fields.');
+                return;
+            }
+    
+            // Create the data payload
+            const data = {
+                CustomerID: customerID,
+                Name: name,
+                Age: age,
+                Gender: gender,
+                Location: location,
+                Subscription_Length_Months: subscriptionLength,
+                Monthly_Bill: monthlyBill,
+                Total_Usage_GB: totalUsage
+            };
+
+            // Send a POST request to your Flask API endpoint
+            fetch('/api/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Handle the prediction response
+                console.log(data);
+                predictionResult.innerText = `Churn Prediction: ${data.prediction}`;
+                predictionResult.style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again later.');
+            });
+        });
+    </script>
+    
+</body>
+</html>
